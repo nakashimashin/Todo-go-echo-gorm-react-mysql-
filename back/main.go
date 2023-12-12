@@ -1,14 +1,14 @@
 package main
 
 import (
-	"back/model"
+	"back/db"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
 )
 
 func connect(c echo.Context) error {
-	db, _ := model.DB.DB()
+	db, _ := db.DB.DB()
 	defer db.Close()
 	err := db.Ping()
 	if err != nil {

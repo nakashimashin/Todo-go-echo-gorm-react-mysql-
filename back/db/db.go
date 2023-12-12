@@ -1,6 +1,7 @@
-package model
+package db
 
 import (
+	"back/model"
 	"log"
 
 	"gorm.io/driver/mysql"
@@ -16,4 +17,5 @@ func init() {
 	if err != nil {
 		log.Fatalln(dsn + "database ccan't connect")
 	}
+	DB.AutoMigrate(&model.Task{})
 }
