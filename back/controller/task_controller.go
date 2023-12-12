@@ -31,3 +31,21 @@ func GetTask(c echo.Context) error {
 	db.DB.Take(&task)
 	return c.JSON(http.StatusOK, task)
 }
+
+// func UpdateTask(c echo.Context) error {
+// 	task := model.Task{}
+// 	if err := c.Bind(&task); err != nil {
+// 		return err
+// 	}
+// 	db.DB.Save(&task)
+// 	return c.JSON(http.StatusOK, task)
+// }
+
+func DeleteTask(c echo.Context) error {
+	task := model.Task{}
+	if err := c.Bind(&task); err != nil {
+		return err
+	}
+	db.DB.Delete(&task)
+	return c.JSON(http.StatusOK, task)
+}
