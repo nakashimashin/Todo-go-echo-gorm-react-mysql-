@@ -28,11 +28,25 @@ func GetTasks(c echo.Context) error {
 }
 
 func GetTask(c echo.Context) error {
-	task := model.Task{}
-	if err := c.Bind(&task); err != nil {
-		return err
+	// URLパラメータからIDを取得
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		// IDが無効な場合はエラーを返す
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid task ID")
 	}
-	db.DB.Take(&task)
+
+	// 指定されたIDのタスクを取得
+	task := model.Task{}
+	result := db.DB.First(&task, id)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		// タスクが見つからない場合はエラーを返す
+		return echo.NewHTTPError(http.StatusNotFound, "Task not found")
+	} else if result.Error != nil {
+		// その他のデータベースエラーがある場合はエラーを返す
+		return echo.NewHTTPError(http.StatusInternalServerError, "Database error")
+	}
+
+	// タスクをJSON形式で返す
 	return c.JSON(http.StatusOK, task)
 }
 
