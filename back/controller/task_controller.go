@@ -4,6 +4,7 @@ import (
 	"back/db"
 	"back/model"
 	"net/http"
+	"time"
 
 	"github.com/labstack/echo/v4"
 )
@@ -32,14 +33,18 @@ func GetTask(c echo.Context) error {
 	return c.JSON(http.StatusOK, task)
 }
 
-// func UpdateTask(c echo.Context) error {
-// 	task := model.Task{}
-// 	if err := c.Bind(&task); err != nil {
-// 		return err
-// 	}
-// 	db.DB.Save(&task)
-// 	return c.JSON(http.StatusOK, task)
-// }
+func UpdateTask(c echo.Context) error {
+	task := model.Task{}
+	if err := c.Bind(&task); err != nil {
+		return err
+	}
+
+	if err := db.DB.Model(&task).Updates(model.Task{Title: task.Title, UpdatedAt: time.Now()}).Error; err != nil {
+		return err
+	}
+
+	return c.JSON(http.StatusOK, task)
+}
 
 func DeleteTask(c echo.Context) error {
 	task := model.Task{}
