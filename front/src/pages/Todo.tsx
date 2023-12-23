@@ -1,4 +1,5 @@
 import { Checkbox } from '@/components/ui/checkbox'
+import { Button } from '@/components/ui/button'
 import { Task } from '@/types/index'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
@@ -38,6 +39,7 @@ export const Todo = () => {
           )
         })}
       </div>
+      <Button className='mt-3'>削除</Button>
     </div>
   )
 }
