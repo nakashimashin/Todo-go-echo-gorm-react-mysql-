@@ -4,12 +4,6 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 
 export const Todo = () => {
-  const [tasks, setTasks] = useState<Omit<Task, 'created_at' | 'updated_at'>[]>(
-    [{ id: 0, title: 'task0' }]
-  )
-
-  const [selectedTasks, setSelectedTasks] = useState<Set<number>>(new Set())
-
   useEffect(() => {
     ;(async () => {
       try {
@@ -23,6 +17,11 @@ export const Todo = () => {
       }
     })()
   }, [])
+
+  const [tasks, setTasks] = useState<Omit<Task, 'created_at' | 'updated_at'>[]>(
+    [{ id: 0, title: 'task0' }]
+  )
+  const [selectedTasks, setSelectedTasks] = useState<Set<number>>(new Set())
 
   const handleCheckboxChange = (taskId: number, isChecked: boolean) => {
     setSelectedTasks((prevSelectedTasks) => {
@@ -53,6 +52,16 @@ export const Todo = () => {
   return (
     <div className="flex flex-col items-center justify-center mt-[50px]">
       <div className="text-[30px]">Todoリスト</div>
+      <div>
+        <input
+          type="text"
+          placeholder="タスクを追加"
+          className="border border-black"
+        />
+        <button className="mt-3 bg-red-500 hover:bg-red-300 w-[50px] h-[30px] border rounded ml-3 font-bold text-white text-[15px]">
+          追加
+        </button>
+      </div>
       <div className="flex flex-col items-center space-y-3 mt-3">
         {tasks.map((task) => {
           return (
