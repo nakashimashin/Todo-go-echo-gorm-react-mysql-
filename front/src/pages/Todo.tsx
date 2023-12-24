@@ -89,7 +89,7 @@ export const Todo = () => {
           追加
         </button>
       </div>
-      <div className="flex flex-col items-center space-y-3 mt-3">
+      <div className="flex flex-col justify-start space-y-3 mt-3">
         {tasks.map((task) => {
           return (
             <div className="flex space-x-2" key={task.id}>
@@ -99,11 +99,12 @@ export const Todo = () => {
                   handleCheckboxChange(task.id, e.target.checked)
                 }
                 checked={selectedTasks.has(task.id)}
+                className="cursor-pointer"
               />
               <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 {task.title}
               </label>
-              <GrUpdate className="text-[15px]" />
+              <GrUpdate className="text-[15px] cursor-pointer" />
             </div>
           )
         })}
