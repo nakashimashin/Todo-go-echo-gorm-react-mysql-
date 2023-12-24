@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Task } from '@/types/index'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
+import { GrUpdate } from 'react-icons/gr'
 
 export const Todo = () => {
   useEffect(() => {
@@ -92,16 +93,17 @@ export const Todo = () => {
         {tasks.map((task) => {
           return (
             <div className="flex space-x-2" key={task.id}>
+              <input
+                type="checkbox"
+                onChange={(e) =>
+                  handleCheckboxChange(task.id, e.target.checked)
+                }
+                checked={selectedTasks.has(task.id)}
+              />
               <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                <input
-                  type="checkbox"
-                  onChange={(e) =>
-                    handleCheckboxChange(task.id, e.target.checked)
-                  }
-                  checked={selectedTasks.has(task.id)}
-                />
                 {task.title}
               </label>
+              <GrUpdate className="text-[15px]" />
             </div>
           )
         })}
