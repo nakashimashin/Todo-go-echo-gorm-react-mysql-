@@ -22,7 +22,7 @@ func main() {
 
 	e.GET("/tasks", controller.GetTasks)
 	e.GET("/task/:id", controller.GetTask)
-	e.POST("/tasks", controller.CreateTask)
+	e.POST("/task", controller.CreateTask)
 	e.PUT("/task/:id", controller.UpdateTask)
 	e.DELETE("/task/:id", controller.DeleteTask)
 	if err := e.Start(":8080"); err != nil {

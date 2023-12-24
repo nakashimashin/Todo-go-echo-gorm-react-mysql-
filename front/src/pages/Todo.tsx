@@ -21,7 +21,25 @@ export const Todo = () => {
   const [tasks, setTasks] = useState<Omit<Task, 'created_at' | 'updated_at'>[]>(
     [{ id: 0, title: 'task0' }]
   )
+  const [newTask, setNewTask] =
+    useState<Omit<Task, 'created_at' | 'updated_at' | 'id'>>()
   const [selectedTasks, setSelectedTasks] = useState<Set<number>>(new Set())
+
+  const handleNewTaskChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTask({ title: e.target.value })
+  }
+
+  const createTask = async () => {
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_REACT_APP_API_URL}/task`,
+        newTask
+      )
+      console.log(res.data)
+    } catch (error) {
+      console.error('Error creating task', error)
+    }
+  }
 
   const handleCheckboxChange = (taskId: number, isChecked: boolean) => {
     setSelectedTasks((prevSelectedTasks) => {
@@ -57,8 +75,12 @@ export const Todo = () => {
           type="text"
           placeholder="タスクを追加"
           className="border border-black"
+          onChange={handleNewTaskChange}
         />
-        <button className="mt-3 bg-red-500 hover:bg-red-300 w-[50px] h-[30px] border rounded ml-3 font-bold text-white text-[15px]">
+        <button
+          onClick={createTask}
+          className="mt-3 bg-red-500 hover:bg-red-300 w-[50px] h-[30px] border rounded ml-3 font-bold text-white text-[15px]"
+        >
           追加
         </button>
       </div>
