@@ -21,8 +21,9 @@ export const Todo = () => {
   const [tasks, setTasks] = useState<Omit<Task, 'created_at' | 'updated_at'>[]>(
     [{ id: 0, title: 'task0' }]
   )
-  const [newTask, setNewTask] =
-    useState<Omit<Task, 'created_at' | 'updated_at' | 'id'>>()
+  const [newTask, setNewTask] = useState<
+    Omit<Task, 'created_at' | 'updated_at' | 'id'>
+  >({ title: '' })
   const [selectedTasks, setSelectedTasks] = useState<Set<number>>(new Set())
 
   const handleNewTaskChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,6 +38,7 @@ export const Todo = () => {
       )
       console.log(res.data)
       setTasks([...tasks, res.data])
+      setNewTask({ title: '' })
     } catch (error) {
       console.error('Error creating task', error)
     }
@@ -76,6 +78,7 @@ export const Todo = () => {
           type="text"
           placeholder="タスクを追加"
           className="border border-black"
+          value={newTask.title}
           onChange={handleNewTaskChange}
         />
         <button
