@@ -36,6 +36,7 @@ export const Todo = () => {
         newTask
       )
       console.log(res.data)
+      setTasks([...tasks, res.data])
     } catch (error) {
       console.error('Error creating task', error)
     }
