@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Task } from '@/types/index'
 import axios from 'axios'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { GrUpdate } from 'react-icons/gr'
 
 export const Todo = () => {
@@ -26,6 +26,8 @@ export const Todo = () => {
     Omit<Task, 'created_at' | 'updated_at' | 'id'>
   >({ title: '' })
   const [selectedTasks, setSelectedTasks] = useState<Set<number>>(new Set())
+  const [editingTaskId, setEditingTaskId] = useState<number | null>(null)
+  const [editingTitle, setEditingTitle] = useState('')
 
   const handleNewTaskChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTask({ title: e.target.value })
@@ -71,6 +73,31 @@ export const Todo = () => {
     }
   }
 
+  const handleEditClick = (task: Omit<Task, 'created_at' | 'updated_at'>) => {
+    setEditingTaskId(task.id)
+    setEditingTitle(task.title)
+  }
+
+  const handleEditingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditingTitle(e.target.value)
+  }
+
+  const saveEdit = async (taskId: number) => {
+    try {
+      const res = await axios.put(
+        `${import.meta.env.VITE_REACT_APP_API_URL}/task/${taskId}`,
+        {
+          title: editingTitle,
+        }
+      )
+      setTasks(tasks.map((task) => (task.id === taskId ? res.data : task)))
+      setEditingTaskId(null)
+      console.log(res.data)
+    } catch (error) {
+      console.error('Error updating task', error)
+    }
+  }
+
   return (
     <div className="flex flex-col items-center justify-center mt-[50px]">
       <div className="text-[30px]">Todoリスト</div>
@@ -101,10 +128,23 @@ export const Todo = () => {
                 checked={selectedTasks.has(task.id)}
                 className="cursor-pointer"
               />
-              <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                {task.title}
-              </label>
-              <GrUpdate className="text-[15px] cursor-pointer" />
+              {editingTaskId === task.id ? (
+                <input
+                  type="text"
+                  value={editingTitle}
+                  onChange={handleEditingChange}
+                  onBlur={() => saveEdit(task.id)}
+                  className="border border-black"
+                />
+              ) : (
+                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                  {task.title}
+                </label>
+              )}
+              <GrUpdate
+                onClick={() => handleEditClick(task)}
+                className="text-[15px] cursor-pointer"
+              />
             </div>
           )
         })}
