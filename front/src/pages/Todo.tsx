@@ -133,7 +133,11 @@ export const Todo = () => {
                   type="text"
                   value={editingTitle}
                   onChange={handleEditingChange}
-                  onBlur={() => saveEdit(task.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      saveEdit(task.id)
+                    }
+                  }}
                   className="border border-black"
                 />
               ) : (
