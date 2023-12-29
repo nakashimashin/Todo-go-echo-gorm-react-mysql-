@@ -20,6 +20,10 @@ func main() {
 	database, _ := db.DB.DB()
 	defer database.Close()
 
+	e.POST("/signup", controller.SignUp)
+	e.POST("/login", controller.Login)
+	e.POST("/logout", controller.Logout)
+
 	e.GET("/tasks", controller.GetTasks)
 	e.GET("/task/:id", controller.GetTask)
 	e.POST("/task", controller.CreateTask)
