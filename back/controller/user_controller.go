@@ -53,14 +53,21 @@ func Login(c echo.Context) error {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["user_id"] = user.ID
-	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
+	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
 	t, err := token.SignedString([]byte("your_jwt_secret"))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create token")
 	}
 
+	cookie := new(http.Cookie)
+	cookie.Name = "jwt"
+	cookie.Value = t
+	cookie.Expires = time.Now().Add(24 * time.Hour)
+	cookie.HttpOnly = true
+	c.SetCookie(cookie)
+
 	return c.JSON(http.StatusOK, map[string]string{
-		"token": t,
+		"message": "Logged in successfully",
 	})
 }
