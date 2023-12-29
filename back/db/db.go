@@ -12,10 +12,20 @@ var DB *gorm.DB
 var err error
 
 func init() {
+	// dbUser := os.Getenv("DB_USER")
+	// dbPassword := os.Getenv("DB_PASSWORD")
+	// dbHost := os.Getenv("DB_HOST")
+	// dbPort := os.Getenv("DB_PORT")
+	// dbName := os.Getenv("DB_NAME")
+
+	// dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+	// 	dbUser, dbPassword, dbHost, dbPort, dbName)
 	dsn := "shin:password@tcp(db:3306)/mysql?charset=utf8mb4&parseTime=True&loc=Local"
+
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatalln(dsn + "database ccan't connect")
+		log.Fatalln("database can't connect", err)
 	}
-	DB.AutoMigrate(&model.Task{})
+
+	DB.AutoMigrate(&model.Task{}, &model.User{})
 }
