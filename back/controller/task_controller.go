@@ -12,55 +12,93 @@ import (
 	"gorm.io/gorm"
 )
 
-func getUserIDFromToken(c echo.Context) uint {
+func getUserIDFromToken(c echo.Context) (uint, error) {
 	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(jwt.MapClaims)
-	userID := claims["user_id"].(uint)
-	return userID
+	if user == nil {
+		return 0, errors.New("user not found in context")
+	}
+
+	claims, ok := user.Claims.(jwt.MapClaims)
+	if !ok {
+		return 0, errors.New("error retrieving user claims from token")
+	}
+
+	userID, ok := claims["user_id"].(float64)
+	if !ok {
+		return 0, errors.New("user ID not found in token")
+	}
+
+	return uint(userID), nil
 }
 
 func CreateTask(c echo.Context) error {
-	userID := getUserIDFromToken(c)
+	userID, err := getUserIDFromToken(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
+	}
 
 	task := model.Task{UserID: userID}
 	if err := c.Bind(&task); err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	db.DB.Create(&task)
+
+	if result := db.DB.Create(&task); result.Error != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, result.Error.Error())
+	}
+
 	return c.JSON(http.StatusCreated, task)
 }
 
 func GetTasks(c echo.Context) error {
-	userID := getUserIDFromToken(c)
+	userID, err := getUserIDFromToken(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
+	}
 
-	tasks := []model.Task{}
-	db.DB.Where("user_id = ?", userID).Find(&tasks)
+	var tasks []model.Task
+	if result := db.DB.Where("user_id = ?", userID).Find(&tasks); result.Error != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, result.Error.Error())
+	}
+
 	return c.JSON(http.StatusOK, tasks)
 }
 
 func GetTask(c echo.Context) error {
-	userID := getUserIDFromToken(c)
-	id, _ := strconv.Atoi(c.Param("id"))
+	userID, err := getUserIDFromToken(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
+	}
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid task ID")
+	}
+
 	var task model.Task
-	result := db.DB.Where("id = ? AND user_id = ?", id, userID).First(&task)
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return echo.NewHTTPError(http.StatusNotFound, "Task not found")
-	} else if result.Error != nil {
+	if result := db.DB.Where("id = ? AND user_id = ?", id, userID).First(&task); result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return echo.NewHTTPError(http.StatusNotFound, "Task not found")
+		}
 		return echo.NewHTTPError(http.StatusInternalServerError, "Database error")
 	}
+
 	return c.JSON(http.StatusOK, task)
 }
 
 func UpdateTask(c echo.Context) error {
-	userID := getUserIDFromToken(c)
+	userID, err := getUserIDFromToken(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
+	}
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid task ID")
 	}
 
 	var existingTask model.Task
-	if err := db.DB.Where("id = ? AND user_id = ?", id, userID).First(&existingTask).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+	if result := db.DB.Where("id = ? AND user_id = ?", id, userID).First(&existingTask); result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return echo.NewHTTPError(http.StatusNotFound, "Task not found")
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, "Database error")
@@ -70,8 +108,6 @@ func UpdateTask(c echo.Context) error {
 	if err := c.Bind(&updateData); err != nil {
 		return err
 	}
-	updateData.ID = existingTask.ID
-	updateData.UserID = existingTask.UserID
 
 	if err := db.DB.Model(&existingTask).Updates(updateData).Error; err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Error updating task")
@@ -81,15 +117,19 @@ func UpdateTask(c echo.Context) error {
 }
 
 func DeleteTask(c echo.Context) error {
-	userID := getUserIDFromToken(c)
+	userID, err := getUserIDFromToken(c)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
+	}
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid task ID")
 	}
 
 	var task model.Task
-	if err := db.DB.Where("id = ? AND user_id = ?", id, userID).First(&task).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+	if result := db.DB.Where("id = ? AND user_id = ?", id, userID).First(&task); result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return echo.NewHTTPError(http.StatusNotFound, "Task not found")
 		}
 		return echo.NewHTTPError(http.StatusInternalServerError, "Database error")

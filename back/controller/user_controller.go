@@ -4,6 +4,7 @@ import (
 	"back/db"
 	"back/model"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -55,7 +56,12 @@ func Login(c echo.Context) error {
 	claims["user_id"] = user.ID
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
-	t, err := token.SignedString([]byte("your_jwt_secret"))
+	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		return echo.NewHTTPError(http.StatusInternalServerError, "JWT secret is not conigured")
+	}
+
+	t, err := token.SignedString([]byte(jwtSecret))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create token")
 	}
