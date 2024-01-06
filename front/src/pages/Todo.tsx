@@ -8,8 +8,14 @@ export const Todo = () => {
   useEffect(() => {
     ;(async () => {
       try {
+        const token = localStorage.getItem('token')
         const res = await axios.get(
-          `${import.meta.env.VITE_REACT_APP_API_URL}/tasks`
+          `${import.meta.env.VITE_REACT_APP_API_URL}/tasks`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         )
         console.log(res.data)
         setTasks(res.data)
