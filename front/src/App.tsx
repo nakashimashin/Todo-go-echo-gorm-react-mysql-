@@ -3,13 +3,12 @@ import { Todo } from './pages/Todo'
 import { Auth } from './pages/Auth'
 
 function App() {
-
   return (
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Todo />} />
-          <Route path="/auth" element={<Auth />} />
+          <Route path="/todo" element={<Todo />} />
+          <Route path="/" element={<Auth />} />
         </Routes>
       </BrowserRouter>
     </>
