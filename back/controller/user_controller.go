@@ -58,35 +58,28 @@ func Login(c echo.Context) error {
 
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret == "" {
-		return echo.NewHTTPError(http.StatusInternalServerError, "JWT secret is not conigured")
+		return echo.NewHTTPError(http.StatusInternalServerError, "JWT_SECRET is not set in .env file")
 	}
 
 	t, err := token.SignedString([]byte(jwtSecret))
 	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create token")
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate token")
 	}
 
-	cookie := new(http.Cookie)
-	cookie.Name = "jwt"
-	cookie.Value = t
-	cookie.Expires = time.Now().Add(24 * time.Hour)
-	cookie.HttpOnly = true
-	c.SetCookie(cookie)
-
 	return c.JSON(http.StatusOK, map[string]string{
-		"message": "Logged in successfully",
+		"token": t,
 	})
 }
 
-func Logout(c echo.Context) error {
-	cookie := new(http.Cookie)
-	cookie.Name = "jwt"
-	cookie.Value = ""
-	cookie.Expires = time.Now().Add(-time.Hour)
-	cookie.HttpOnly = true
-	c.SetCookie(cookie)
+// func Logout(c echo.Context) error {
+// 	cookie := new(http.Cookie)
+// 	cookie.Name = "jwt"
+// 	cookie.Value = ""
+// 	cookie.Expires = time.Now().Add(-time.Hour)
+// 	cookie.HttpOnly = true
+// 	c.SetCookie(cookie)
 
-	return c.JSON(http.StatusOK, map[string]string{
-		"message": "Logged out successfully",
-	})
-}
+// 	return c.JSON(http.StatusOK, map[string]string{
+// 		"message": "Logged out successfully",
+// 	})
+// }

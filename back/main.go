@@ -41,7 +41,7 @@ func main() {
 
 	e.POST("/signup", controller.SignUp)
 	e.POST("/login", controller.Login)
-	e.POST("/logout", controller.Logout)
+	// e.POST("/logout", controller.Logout)
 
 	jwtMiddleware := echojwt.JWT([]byte(jwtSecret))
 
