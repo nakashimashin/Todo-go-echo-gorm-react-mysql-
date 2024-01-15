@@ -4,15 +4,17 @@ import (
 	"back/db"
 	"back/model"
 	"errors"
+	"log"
 	"net/http"
 	"strconv"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
 
 func getUserIDFromToken(c echo.Context) (uint, error) {
+	log.Println(c)
 	user := c.Get("user").(*jwt.Token)
 	if user == nil {
 		return 0, errors.New("user not found in context")
@@ -51,6 +53,7 @@ func CreateTask(c echo.Context) error {
 
 func GetTasks(c echo.Context) error {
 	userID, err := getUserIDFromToken(c)
+	log.Println(err)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
 	}

@@ -10,7 +10,7 @@ export const Todo = () => {
       try {
         const token = localStorage.getItem('token')
         const res = await axios.get(
-          `${import.meta.env.VITE_REACT_APP_API_URL}/tasks`,
+          `${import.meta.env.VITE_REACT_APP_API_URL}/api/tasks`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

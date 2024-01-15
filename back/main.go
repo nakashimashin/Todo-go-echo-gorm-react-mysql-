@@ -41,15 +41,17 @@ func main() {
 
 	e.POST("/signup", controller.SignUp)
 	e.POST("/login", controller.Login)
-	// e.POST("/logout", controller.Logout)
 
-	jwtMiddleware := echojwt.JWT([]byte(jwtSecret))
+	api := e.Group("/api")
+	api.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey: []byte(jwtSecret),
+	}))
 
-	e.GET("/tasks", controller.GetTasks, jwtMiddleware)
-	e.GET("/task/:id", controller.GetTask, jwtMiddleware)
-	e.POST("/task", controller.CreateTask, jwtMiddleware)
-	e.PUT("/task/:id", controller.UpdateTask, jwtMiddleware)
-	e.DELETE("/task/:id", controller.DeleteTask, jwtMiddleware)
+	api.GET("/tasks", controller.GetTasks)
+	api.GET("/task/:id", controller.GetTask)
+	api.POST("/task", controller.CreateTask)
+	api.PUT("/task/:id", controller.UpdateTask)
+	api.DELETE("/task/:id", controller.DeleteTask)
 	if err := e.Start(":8080"); err != nil {
 		e.Logger.Fatal(err)
 	}
