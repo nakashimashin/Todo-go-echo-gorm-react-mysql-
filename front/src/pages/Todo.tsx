@@ -101,11 +101,17 @@ export const Todo = () => {
   }
 
   const saveEdit = async (taskId: number) => {
+    const token = localStorage.getItem('token')
     try {
       const res = await axios.put(
-        `${import.meta.env.VITE_REACT_APP_API_URL}/task/${taskId}`,
+        `${import.meta.env.VITE_REACT_APP_API_URL}/api/task/${taskId}`,
         {
           title: editingTitle,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       )
       setTasks(tasks.map((task) => (task.id === taskId ? res.data : task)))
