@@ -25,26 +25,32 @@ export const Auth = () => {
     }
   }
   return (
-    <div>
-      <form name="login_form" onSubmit={handleLogin}>
+    <div className="flex flex-col items-center justify-center">
+      <form
+        name="login_form"
+        onSubmit={handleLogin}
+        className="mt-[30px] flex items-center flex-col"
+      >
         <div className="flex flex-col">
-          <label htmlFor="login">Login</label>
+          <label htmlFor="login" className="flex justify-center text-[40px]">
+            Login
+          </label>
           <label htmlFor="password">Password</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="border border-black w-[130px]"
+            className="border border-black w-[250px] h-[40px]"
           />
           <label htmlFor="email">Email</label>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="border border-black w-[130px]"
+            className="border border-black w-[250px] h-[40px]"
           />
         </div>
-        <button className="mt-3 bg-red-500 hover:bg-red-300 w-[50px] h-[30px] border rounded font-bold text-white text-[15px]">
+        <button className="mt-3 bg-red-500 hover:bg-red-300 w-[100px] h-[50px] border rounded font-bold text-white text-[20px]">
           ログイン
         </button>
       </form>
