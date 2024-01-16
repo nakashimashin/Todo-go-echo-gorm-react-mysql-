@@ -72,10 +72,16 @@ export const Todo = () => {
   }
 
   const deleteSelectedTasks = async () => {
+    const token = localStorage.getItem('token')
     try {
       for (const taskId of selectedTasks) {
         await axios.delete(
-          `${import.meta.env.VITE_REACT_APP_API_URL}/task/${taskId}`
+          `${import.meta.env.VITE_REACT_APP_API_URL}/api/task/${taskId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         )
       }
       setTasks(tasks.filter((task) => !selectedTasks.has(task.id)))
