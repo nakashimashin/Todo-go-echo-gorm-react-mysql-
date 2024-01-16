@@ -5,20 +5,31 @@ import { useNavigate } from 'react-router-dom'
 export const Auth = () => {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
+  const [username, setUsername] = useState<string>('')
   const navigate = useNavigate()
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      const res = await axios.post(
+      const signUpRes = await axios.post(
         `${import.meta.env.VITE_REACT_APP_API_URL}/signup`,
+        {
+          email,
+          password,
+          username,
+        }
+      )
+      console.log(signUpRes.data)
+      const loginRes = await axios.post(
+        `${import.meta.env.VITE_REACT_APP_API_URL}/login`,
         {
           email,
           password,
         }
       )
-      console.log(res.data)
-      localStorage.setItem('token', res.data.token)
+      console.log(loginRes.data)
+      localStorage.setItem('token', loginRes.data.token)
+      navigate('/todo')
     } catch (error) {
       console.error('Error signup', error)
     }
@@ -83,6 +94,8 @@ export const Auth = () => {
           <label htmlFor="username">username</label>
           <input
             type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             className="border border-black w-[250px] h-[40px]"
           />
           <label htmlFor="username">Password</label>
