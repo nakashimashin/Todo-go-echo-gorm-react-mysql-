@@ -3,6 +3,7 @@ import { Task } from '@/types/index'
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { GrUpdate } from 'react-icons/gr'
+import { useNavigate } from 'react-router-dom'
 
 export const Todo = () => {
   useEffect(() => {
@@ -25,6 +26,7 @@ export const Todo = () => {
     })()
   }, [])
 
+  const navigate = useNavigate()
   const [tasks, setTasks] = useState<Omit<Task, 'created_at' | 'updated_at'>[]>(
     [{ id: 0, title: 'task0' }]
   )
@@ -122,9 +124,20 @@ export const Todo = () => {
     }
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    navigate('/')
+  }
+
   return (
     <div className="flex flex-col items-center justify-center mt-[50px]">
       <div className="text-[30px]">Todoリスト</div>
+      <button
+        onClick={handleLogout}
+        className="mt-3 bg-blue-500 hover:bg-blue-300 w-[80px] h-[30px] border rounded ml-3 font-bold text-white text-[15px]"
+      >
+        ログアウト
+      </button>
       <div>
         <input
           type="text"
