@@ -40,10 +40,16 @@ export const Todo = () => {
   }
 
   const createTask = async () => {
+    const token = localStorage.getItem('token')
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_REACT_APP_API_URL}/task`,
-        newTask
+        `${import.meta.env.VITE_REACT_APP_API_URL}/api/task`,
+        newTask,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       )
       console.log(res.data)
       setTasks([...tasks, res.data])
