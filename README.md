@@ -1,7 +1,7 @@
-# バックエンド
+## バックエンド
 cd back
 docker compose up
 
-#フロントエンド
+## フロントエンド
 cd front
 npm run dev
