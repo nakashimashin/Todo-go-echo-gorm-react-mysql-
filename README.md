@@ -1,7 +1,7 @@
 ## バックエンド
-cd back
-docker compose up
+cd back 
+docker compose up 
 
 ## フロントエンド
-cd front
-npm run dev
+cd front 
+npm run dev 
